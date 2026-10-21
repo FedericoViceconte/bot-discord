@@ -1,0 +1,13 @@
+services:
+  guardian:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATA_DIR: /app/data
+    volumes:
+      - guardian-data:/app/data
+    init: true
+
+volumes:
+  guardian-data:
