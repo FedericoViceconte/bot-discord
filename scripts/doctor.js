@@ -2,14 +2,22 @@ import { existsSync, accessSync, constants, readFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { parseEnv } from 'node:util';
 import { readSettings, requireDiscord } from '../src/settings.js';
+import { loadCloudAccess } from '../src/cloud-access.js';
 
 const [major, minor] = process.versions.node.split('.').map(Number);
 let failed = false;
 function check(ok, message) { console.log(`${ok ? 'OK' : 'ERROR'}: ${message}`); if (!ok) failed = true; }
 check(major > 24 || (major === 24 && minor >= 17), `Node.js ${process.versions.node}; se necesita 24.17 o superior.`);
 check(existsSync('node_modules/discord.js/package.json') && existsSync('node_modules/@napi-rs/canvas/package.json'), 'Dependencias. Si faltan, abri 1-INSTALAR.cmd.');
-check(existsSync('.env'), 'Archivo .env. Para continuar el bot del equipo, usa 8-RECIBIR-RELEVO.cmd.');
-if (!failed) {
+const shared = existsSync('community.json') || existsSync('data/cloud-access.json');
+if (shared) {
+  try {
+    const access = loadCloudAccess(process.cwd());
+    check(Boolean(access), 'Vinculacion de esta PC. Si falta, abri el exe y elegi Vincular esta PC.');
+    if (access) console.log('OK: Comunidad compartida configurada. Los datos se obtienen en linea antes de conectar Discord.');
+  } catch { check(false, 'El acceso de la comunidad esta danado. Volve a vincular esta PC desde el exe.'); }
+} else check(existsSync('.env'), 'Archivo .env. Para continuar el bot del equipo, usa 8-RECIBIR-RELEVO.cmd.');
+if (!failed && !shared) {
   try {
     const env = parseEnv(readFileSync('.env', 'utf8'));
     const settings = readSettings(env);

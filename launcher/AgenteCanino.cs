@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Globalization;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -14,7 +15,7 @@ using System.Windows.Forms;
 
 [assembly: AssemblyTitle("Agente Canino")]
 [assembly: AssemblyDescription("Panel de alojamiento para WO Definitive Edition")]
-[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyVersion("1.2.0.0")]
 
 internal sealed class CommandResult {
     public int Code;
@@ -32,6 +33,13 @@ internal static class Runner {
                 if (!(name.Contains("TOKEN") || name.Contains("API_KEY") || name.Contains("PASSWORD") || name.Contains("SECRET"))) continue;
                 string secret = line.Substring(equals + 1).Trim().Trim('"', '\'');
                 if (secret.Length >= 8) value = value.Replace(secret, "[OCULTO]");
+            }
+        } catch { }
+        try {
+            string accessPath = Path.Combine(root, "data", "cloud-access.json");
+            if (File.Exists(accessPath)) {
+                var access = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(File.ReadAllText(accessPath));
+                if (access.ContainsKey("secret")) value = value.Replace((string)access["secret"], "[OCULTO]");
             }
         } catch { }
         return value;
@@ -102,6 +110,29 @@ internal sealed class PasswordDialog : Form {
     }
 }
 
+internal sealed class CommunityDialog : Form {
+    private readonly TextBox code = new TextBox();
+    public string Code { get { return code.Text.Trim(); } }
+    public CommunityDialog(string invitation) {
+        bool sharing = invitation != null;
+        Text = sharing ? "Vincular a tus administradores" : "Vincular esta PC una sola vez";
+        ClientSize = new Size(610, 265); StartPosition = FormStartPosition.CenterParent;
+        FormBorderStyle = FormBorderStyle.FixedDialog; MaximizeBox = false; MinimizeBox = false; ShowInTaskbar = false;
+        Font = new Font("Segoe UI", 10);
+        Controls.Add(new Label { Text = sharing ? "Compartí este código solo con tus administradores. Permite alojar el bot." : "Pegá el código de comunidad que te pasó un administrador.\nDespués de vincularla, solo vas a tener que abrir el exe.", Location = new Point(18, 18), Size = new Size(574, 48) });
+        code.SetBounds(18, 82, 574, 104); code.Multiline = true; code.ScrollBars = ScrollBars.Vertical; code.MaxLength = 6000;
+        code.ReadOnly = sharing; if (sharing) code.Text = invitation; Controls.Add(code);
+        var cancel = new Button { Text = sharing ? "Cerrar" : "Cancelar", DialogResult = DialogResult.Cancel, Location = new Point(292, 207), Size = new Size(110, 38) };
+        var accept = new Button { Text = sharing ? "Copiar código" : "Vincular y comenzar", Location = new Point(414, 207), Size = new Size(178, 38) };
+        accept.Click += delegate {
+            if (sharing) { Clipboard.SetText(code.Text); accept.Text = "Código copiado"; }
+            else if (!Code.StartsWith("WO1.")) MessageBox.Show(this, "El código debe empezar por WO1. Copialo completo.");
+            else DialogResult = DialogResult.OK;
+        };
+        Controls.Add(cancel); Controls.Add(accept); CancelButton = cancel;
+    }
+}
+
 internal sealed class MainForm : Form {
     private readonly string root;
     private readonly Label status = new Label();
@@ -111,6 +142,7 @@ internal sealed class MainForm : Form {
     private readonly List<Button> actions = new List<Button>();
     private bool busy;
     private readonly bool autoStart;
+    private readonly System.Windows.Forms.Timer statusTimer = new System.Windows.Forms.Timer();
     private static readonly Color Pink = Color.FromArgb(255, 66, 113);
     private static readonly Color Muted = Color.FromArgb(169, 177, 194);
 
@@ -125,12 +157,12 @@ internal sealed class MainForm : Form {
         Controls.Add(new Label { Text = "WO DEFINITIVE EDITION  /  Tu comunidad, conectada", ForeColor = Muted, Location = new Point(30, 77), Size = new Size(700, 26) });
         var card = new Panel { BackColor = Color.FromArgb(28, 33, 45), Location = new Point(30, 122), Size = new Size(700, 109) };
         status.Text = "Listo para alojar el bot"; status.Font = new Font("Segoe UI", 15, FontStyle.Bold); status.ForeColor = Pink; status.SetBounds(18, 15, 664, 34);
-        explanation.Text = "Abrí esta app para iniciar. Para cambiar de PC, usá un relevo."; explanation.ForeColor = Muted; explanation.SetBounds(18, 57, 664, 42);
+        explanation.Text = Shared ? "Abrí esta app: la comunidad elige automáticamente qué PC aloja el bot." : "Abrí esta app para iniciar. Para cambiar de PC, usá un relevo."; explanation.ForeColor = Muted; explanation.SetBounds(18, 57, 664, 42);
         card.Controls.Add(status); card.Controls.Add(explanation); Controls.Add(card);
         AddButton("Iniciar bot", 30, 255, 340, Pink, async delegate { await StartBot(false); });
         AddButton("Detener en esta PC", 390, 255, 340, Color.FromArgb(47, 54, 71), async delegate { await StopBot(); });
-        AddButton("Pasar a un amigo", 30, 314, 340, Color.FromArgb(47, 54, 71), async delegate { await Export(); });
-        AddButton("Recibir y comenzar", 390, 314, 340, Color.FromArgb(47, 54, 71), async delegate { await Import(); });
+        AddButton(Shared ? "Vincular esta PC" : "Pasar a un amigo", 30, 314, 340, Color.FromArgb(47, 54, 71), async delegate { if (Shared) await Link(); else await Export(); });
+        AddButton(Shared ? "Código para el equipo" : "Recibir y comenzar", 390, 314, 340, Color.FromArgb(47, 54, 71), async delegate { if (Shared) await Invite(); else await Import(); });
         AddButton("Preparar esta PC", 30, 376, 220, Color.FromArgb(32, 38, 51), async delegate { await Prepare(); });
         AddButton("Comprobar", 270, 376, 220, Color.FromArgb(32, 38, 51), async delegate { await Diagnose(); });
         AddButton("Ver actividad", 510, 376, 220, Color.FromArgb(32, 38, 51), delegate { details.Visible = !details.Visible; });
@@ -139,16 +171,23 @@ internal sealed class MainForm : Form {
         details.BackColor = Color.FromArgb(24, 28, 38); details.ForeColor = Muted; details.BorderStyle = BorderStyle.FixedSingle; details.Visible = false; Controls.Add(details);
         Controls.Add(new Label { Text = "Solo una PC a la vez. Podés cerrar esta ventana: el bot sigue funcionando.", ForeColor = Muted, Location = new Point(30, 534), Size = new Size(700, 24) });
         Shown += async delegate {
-            if (File.Exists(Marker)) SetState("Relevo preparado · esta PC en pausa", "Recibí el relevo actualizado antes de volver a alojarlo.", false);
+            if (Shared && !autoStart) SetState("Comunidad con relevo automático", "Cada PC se vincula una sola vez. Después, abrís el exe y listo.", false);
+            else if (Shared && !HasCloudAccess) SetState("Vinculá esta PC una sola vez", "Usá el código de un administrador. Después, el relevo es automático.", false);
+            else if (Shared && autoStart) await StartBot(true);
+            else if (File.Exists(Marker)) SetState("Relevo preparado · esta PC en pausa", "Recibí el relevo actualizado antes de volver a alojarlo.", false);
             else if (autoStart && HasData) await StartBot(true);
             else SetState("Primera vez en esta PC", "Elegí Recibir y comenzar con el archivo que te pasa el anfitrión actual.", false);
         };
+        statusTimer.Interval = 2000; statusTimer.Tick += delegate { RefreshHostStatus(false); }; statusTimer.Start();
+        FormClosed += delegate { statusTimer.Stop(); statusTimer.Dispose(); };
         FormClosing += delegate(object sender, FormClosingEventArgs e) {
             if (busy) { e.Cancel = true; MessageBox.Show(this, "Esperá a que termine la operación antes de cerrar."); }
         };
     }
 
     private string Marker { get { return Path.Combine(root, "data", "host-handoff.json"); } }
+    private bool Shared { get { return File.Exists(Path.Combine(root, "community.json")) || HasCloudAccess; } }
+    private bool HasCloudAccess { get { return File.Exists(Path.Combine(root, "data", "cloud-access.json")); } }
     private bool HasData { get { return File.Exists(Path.Combine(root, ".env")) && File.Exists(Path.Combine(root, "data", "guardian.sqlite")); } }
     private void AddButton(string text, int x, int y, int width, Color color, EventHandler click) {
         var button = new Button { Text = text, Location = new Point(x, y), Size = new Size(width, 44), FlatStyle = FlatStyle.Flat, BackColor = color, ForeColor = Color.White, Cursor = Cursors.Hand, Font = new Font("Segoe UI", 11, FontStyle.Bold) };
@@ -181,20 +220,74 @@ internal sealed class MainForm : Form {
         if (!await PrepareCore(false)) { Failure("No se pudo preparar esta PC."); return false; }
         SetState("Conectando a Discord…", "Podés esperar acá; no necesitás abrir ninguna consola.", false);
         var result = await Command("launcher-action.ps1", "-Action start", null);
-        if (result.Code == 0) { SetState("Bot activo en esta PC", "Podés cerrar esta ventana. Mantené la PC encendida y con Internet.", true); return true; }
+        if (result.Code == 0 || (result.Code == 2 && Shared)) {
+            if (Shared) { SetState("Comunidad conectada · comprobando estado…", "Esta PC aloja el bot o espera su turno automáticamente.", false); RefreshHostStatus(true); }
+            else SetState("Bot activo en esta PC", "Podés cerrar esta ventana. Mantené la PC encendida y con Internet.", true);
+            return true;
+        }
         Failure("El bot no confirmó la conexión."); return false;
     }
     private async Task StartBot(bool automatic) {
         if (busy) return;
-        if (!HasData) { SetState("Falta recibir el bot del equipo", "Usá Recibir y comenzar. El código de GitHub no incluye los datos del servidor.", false); return; }
-        if (File.Exists(Marker)) {
+        if (Shared && !HasCloudAccess) { if (!automatic) await Link(); return; }
+        if (!Shared && !HasData) { SetState("Falta recibir el bot del equipo", "Usá Recibir y comenzar. El código de GitHub no incluye los datos del servidor.", false); return; }
+        if (!Shared && File.Exists(Marker)) {
             if (automatic) return;
             if (MessageBox.Show(this, "Esta PC preparó un relevo. Si tu amigo ya lo usó, recibí su copia actualizada para no perder cambios.\n\nSolo continuá si tu amigo NO llegó a usarlo y su bot está detenido. ¿Reanudar esta copia?", "Relevo pendiente", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
         }
         SetBusy(true);
-        try { if (await StartCore() && File.Exists(Marker)) File.Delete(Marker); }
+        try { if (await StartCore() && !Shared && File.Exists(Marker)) File.Delete(Marker); }
         catch (Exception error) { details.AppendText(Runner.Redact(root, error.Message)); Failure("No se pudo iniciar el bot."); }
         finally { SetBusy(false); }
+    }
+    private void RefreshHostStatus(bool force) {
+        if ((!force && busy) || !Shared) return;
+        try {
+            var json = new JavaScriptSerializer();
+            var meta = json.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(root, "data", "runtime-process.json")));
+            var current = json.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(root, "data", "host-status.json")));
+            int pid = Convert.ToInt32(meta["pid"]);
+            if (Convert.ToInt32(current["pid"]) != pid || (string)meta["entryPath"] != Path.Combine(root, "src", "index.js")) return;
+            Process alive;
+            try { alive = Process.GetProcessById(pid); }
+            catch (ArgumentException) { SetState("Detenido en esta PC", "Elegí Iniciar bot para volver a conectar con la comunidad.", false); return; }
+            using (var process = alive) {
+                DateTime started = DateTime.Parse((string)meta["startedAt"], CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind).ToUniversalTime();
+                if (process.ProcessName != "node" || Math.Abs((process.StartTime.ToUniversalTime() - started).TotalSeconds) >= 2) return;
+            }
+            string phase = (string)current["state"], description = (string)current["description"];
+            if (phase == "active") SetState("Bot activo en esta PC", description, true);
+            else if (phase == "waiting") SetState("En espera automática", description, false);
+            else if (phase == "connecting") SetState("Tomando el relevo…", description, false);
+            else if (phase == "stopped") SetState("Detenido en esta PC", description, false);
+        } catch { /* Partial status writes are retried on the next tick. */ }
+    }
+    private async Task Link() {
+        if (busy) return;
+        using (var dialog = new CommunityDialog(null)) {
+            if (dialog.ShowDialog(this) != DialogResult.OK) return;
+            string input = new JavaScriptSerializer().Serialize(new { code = dialog.Code }); SetBusy(true);
+            try {
+                if (!await PrepareCore(true)) { Failure("No se pudo preparar esta PC."); return; }
+                SetState("Vinculando esta PC…", "Se comprueba el acceso privado a la comunidad.", false);
+                var result = await Command("launcher-action.ps1", "-Action link", input);
+                if (result.Code == 0) await StartCore(); else Failure("No se pudo vincular. Revisá el código y detené cualquier copia local anterior.");
+            } catch (Exception error) { details.AppendText(Runner.Redact(root, error.Message)); Failure("No se pudo vincular esta PC."); }
+            finally { input = null; SetBusy(false); }
+        }
+    }
+    private async Task Invite() {
+        if (busy) return;
+        if (!HasCloudAccess) { SetState("Primero vinculá esta PC", "Necesitás el código inicial de un administrador de la comunidad.", false); return; }
+        string invitation = null; SetBusy(true);
+        try {
+            if (!await PrepareCore(true)) { Failure("No se pudo preparar el código."); return; }
+            var result = await Command("launcher-action.ps1", "-Action invite", null);
+            if (result.Code == 0) invitation = File.ReadAllText(Path.Combine(root, "data", "cloud-invite.txt"));
+            else Failure("No se pudo obtener el código.");
+        } catch (Exception error) { details.AppendText(Runner.Redact(root, error.Message)); Failure("No se pudo obtener el código."); }
+        finally { SetBusy(false); RefreshHostStatus(true); }
+        if (invitation != null) using (var dialog = new CommunityDialog(invitation)) dialog.ShowDialog(this);
     }
     private async Task StopBot() {
         if (busy) return; SetBusy(true);

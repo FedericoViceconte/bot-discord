@@ -1,5 +1,7 @@
 # Alojar el mismo bot por turnos, gratis
 
+**El equipo ya usa [ALOJAMIENTO-AUTOMATICO.md](ALOJAMIENTO-AUTOMATICO.md): no necesita estos archivos de relevo.** Vincular cada PC una vez y después abrir el exe. Esta guía queda únicamente como alternativa para bots independientes sin `community.json` ni acceso compartido.
+
 Cada uno puede usar su PC con Windows. Solo una PC ejecuta el bot a la vez. Tener Discord abierto no inicia el programa. Si todas las PC están apagadas, el bot estará desconectado. El relevo es manual; no hay detección de otras computadoras ni sincronización por GitHub.
 
 ## Con la app, sin CMD

@@ -2,6 +2,7 @@ param([ValidateSet('export','import')][string]$Mode)
 try {
     . (Join-Path $PSScriptRoot 'bot-process.ps1')
     Set-Location -LiteralPath $botRoot
+    if ((Test-Path -LiteralPath 'community.json') -or (Test-Path -LiteralPath 'data/cloud-access.json')) { throw 'Esta comunidad usa relevo automatico. Abri el exe; ya no hay que pasar archivos de relevo.' }
     . (Join-Path $PSScriptRoot 'node-runtime.ps1')
     Use-BotNode | Out-Null
     if (-not (Get-Command node.exe -ErrorAction SilentlyContinue)) { throw 'Instala Node.js 24.17 o superior y abri 1-INSTALAR.cmd.' }

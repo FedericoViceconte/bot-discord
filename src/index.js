@@ -1,5 +1,5 @@
 import { Client, Events, GatewayIntentBits, MessageFlags, ActivityType } from 'discord.js';
-import { readSettings, requireDiscord } from './settings.js';
+import { requireDiscord } from './settings.js';
 import { Store } from './store.js';
 import { Locks } from './locks.js';
 import { AI } from './ai.js';
@@ -8,14 +8,24 @@ import { welcomeMember,welcomeAfterLanguage } from './welcome.js';
 import {cleanupTickets} from './tickets.js';
 import {FreeTranslator} from './free-translate.js';
 import {Newsroom} from './newsroom.js';
-import {acquireHostLock} from './host-lock.js';
+import {hostRuntime,discordGuard} from './host-runtime.js';
 
-let client, store, releaseHost;
-try {
-  const settings=readSettings(); requireDiscord(settings);
-  releaseHost=await acquireHostLock(settings);
-  store=new Store(settings.dataDir);
-  client=new Client({ intents:[GatewayIntentBits.Guilds,GatewayIntentBits.GuildMembers,GatewayIntentBits.GuildMessages,GatewayIntentBits.MessageContent],allowedMentions:{ parse:[],repliedUser:false } });
+async function runBot(settings,{session,stopped,status}) {
+ let client,store,rawStore,cleaner;
+ let accepting=true;
+ const guardEvent=work=>(...args)=>{
+   if(!accepting)return;
+   Promise.resolve().then(()=>{session?.assertActive();return work(...args);}).then(()=>session?.flush()).catch(()=>{
+     if(!session || session.active)console.error('[WO] No se pudo completar un evento. Revisá conexión y permisos.');
+   });
+ };
+ try {
+  requireDiscord(settings);
+  rawStore=new Store(settings.dataDir);
+  store=session ? session.bind(rawStore,settings) : rawStore;
+  if(session)session.sequence++;
+  client=new Client({ intents:[GatewayIntentBits.Guilds,GatewayIntentBits.GuildMembers,GatewayIntentBits.GuildMessages,GatewayIntentBits.MessageContent],allowedMentions:{ parse:[],repliedUser:false },
+    ...(session ? {rest:{timeout:10000,retries:0,makeRequest:discordGuard(session)}} : {}) });
   const locks=new Locks();
   const ai=new AI(settings,store);
 
@@ -33,8 +43,9 @@ try {
   };
   const news=new Newsroom({store,translator:new FreeTranslator(store),log});
   const handle=handlers({ store,locks,ai,news,log });
-  client.once(Events.ClientReady,async ready => {
+  client.once(Events.ClientReady,guardEvent(async ready => {
     console.log(`✅ ${ready.user.tag} conectado. IA: ${ai.enabled ? 'activada' : 'desactivada'}.`);
+    status('active',session ? 'Bot activo con datos compartidos. Las otras PC esperan automáticamente.' : 'Bot activo en esta PC.');
     ready.user.setPresence({ activities:[{ name:'WO Definitive Edition · /ayuda',type:ActivityType.Watching }],status:'online' });
     console.log('En Discord: /configurar (opcional), /instalar y /diagnostico.');
     try {
@@ -45,7 +56,7 @@ try {
       await news.catchup(guild);
       // Retry only persisted closing/legacy closed tickets. This does not scan
       // or modify the admins' private rooms.
-      setInterval(()=>cleanupTickets(guild,store,locks,log).catch(error=>log(guild,'Falló la limpieza de tickets.',error)),60000).unref();
+      cleaner=setInterval(guardEvent(()=>cleanupTickets(guild,store,locks,log)),60000); cleaner.unref();
       // Remove stale temporary welcomes whose owners already selected a language before a restart.
       for (const channel of guild.channels.cache.values()) {
         const owner=channel.topic?.match(/^wo:onboarding:(\d+)$/)?.[1];
@@ -60,23 +71,23 @@ try {
         }
       }
     } catch { console.error('[WO] No se pudo comprobar el servidor configurado. Revisá la invitación y el ID.'); }
-  });
-  client.on(Events.GuildMemberAdd,member => {
+  }));
+  client.on(Events.GuildMemberAdd,guardEvent(member => {
     if (member.guild.id!==settings.guildId) return;
-    locks.run(`member:${member.guild.id}:${member.id}`,()=>welcomeMember(member,store,log)).catch(error=>log(member.guild,'Falló una bienvenida.',error));
-  });
-  client.on(Events.MessageCreate,message=>{
+    return locks.run(`member:${member.guild.id}:${member.id}`,()=>welcomeMember(member,store,log)).catch(error=>log(member.guild,'Falló una bienvenida.',error));
+  }));
+  client.on(Events.MessageCreate,guardEvent(message=>{
     if(message.guildId!==settings.guildId)return;
-    news.accept(message).catch(async error=>{
+    return news.accept(message).catch(async error=>{
       await news.inputError(message,error).catch(()=>{});
       await log(message.guild,'No se pudo preparar una novedad.',error);
     });
-  });
-  client.on(Events.GuildMemberRemove,member => {
+  }));
+  client.on(Events.GuildMemberRemove,guardEvent(async member => {
     if (member.guild.id!==settings.guildId) return;
-    for (const channel of member.guild.channels.cache.values()) if (channel.topic===`wo:onboarding:${member.id}`) channel.delete('Miembro salió del servidor').catch(()=>{});
-  });
-  client.on(Events.InteractionCreate,async i => {
+    for (const channel of member.guild.channels.cache.values()) if (channel.topic===`wo:onboarding:${member.id}`) await channel.delete('Miembro salió del servidor').catch(()=>{});
+  }));
+  client.on(Events.InteractionCreate,guardEvent(async i => {
     if (i.guildId!==settings.guildId) return;
     try { await handle(i); }
     catch (error) {
@@ -90,11 +101,21 @@ try {
       } catch { console.error('[WO] No se pudo responder a la interacción.'); }
       await log(i.guild,`⚠️ Falló una interacción de <@${i.user.id}>. ${error.code ? `Código ${error.code}.` : 'Revisá configuración/permisos.'}`,error);
     }
-  });
+  }));
   client.on(Events.Error,error=>console.error(`[Discord] ${error.code || error.name}`));
-  for (const signal of ['SIGINT','SIGTERM']) process.once(signal,async()=>{ client.destroy(); store.close(); await releaseHost?.(); process.exit(0); });
-  await client.login(settings.token);
-} catch (error) {
+  await session?.flush();
+  await Promise.race([client.login(settings.token),stopped]);
+  await stopped;
+ } finally {
+  accepting=false; clearInterval(cleaner);
+  client?.destroy();
+  if(session){session.stopNewWork=true;session.abort.abort();await session.shutdown();}
+  rawStore?.close();
+ }
+}
+
+try { await hostRuntime(runBot); }
+catch (error) {
   console.error(`No se pudo iniciar WO Guardian: ${error.code || error.message.replace(/Bot\s+\S+/g,'[redacted]')}`);
-client?.destroy(); store?.close(); await releaseHost?.(); process.exitCode=1;
+  process.exitCode=1;
 }

@@ -2,7 +2,9 @@
 
 Bot de comunidad con bienvenida, idiomas, soporte privado, sugerencias y anuncios. OpenAI está desactivado y no hay asistente ni reproducción de voz. Las novedades automáticas se traducen gratuitamente con MyMemory.
 
-En Windows, extraé la carpeta completa y abrí **Agente-Canino.exe**. Tiene botones para iniciar, detener, preparar la PC y pasar o recibir el bot de un amigo; no hace falta abrir los CMD. Al abrir la app inicia la copia configurada, excepto si preparaste un relevo y quedó en pausa. Podés cerrar la ventana: el bot sigue en segundo plano. Para tenerlo en el escritorio, creá un acceso directo; no muevas el exe fuera de su carpeta.
+**El equipo usa alojamiento automático gratuito entre PC.** Una vez vinculada cada PC desde el exe, solo hay que abrirlo: la comunidad elige un anfitrión, comparte los datos cifrados y toma el relevo cuando el anterior se desconecta. Ya no hay que pasarse archivos en cada cambio. Ver **[ALOJAMIENTO-AUTOMATICO.md](ALOJAMIENTO-AUTOMATICO.md)**. La selección inicial se realiza con **Vincular esta PC** y el código privado de un administrador; **Código para el equipo** permite copiarlo. Una PC en espera puede cerrar la ventana y seguir esperando en segundo plano. Tras un apagado brusco, el cambio suele tardar alrededor de un minuto. Si todas las PC están apagadas, el bot permanece desconectado.
+
+En Windows, extraé la carpeta completa y abrí **Agente-Canino.exe**. Tiene botones para iniciar, detener, preparar la PC y vincular el acceso compartido; no hace falta abrir los CMD. Podés cerrar la ventana: el bot sigue activo o esperando en segundo plano. Para tenerlo en el escritorio, creá un acceso directo; no muevas el exe fuera de su carpeta. Los botones de relevo por archivo solo se muestran en instalaciones independientes que no tienen comunidad compartida.
 
 La primera preparación usa Node.js 24.17 o superior ya instalado o descarga una versión portátil de la rama 24 del [sitio oficial de Node.js](https://nodejs.org/dist/index.json), comprueba el SHA-256 del archivo y la guarda en `.runtime/`. No necesita permisos de Administrador ni modifica el inicio o PATH de Windows. Instala los componentes con el lockfile del repositorio; necesita Internet la primera vez. La PC debe permanecer encendida; también se incluye Docker para un servidor permanente. Los CMD anteriores siguen disponibles.
 
@@ -69,6 +71,14 @@ Si falla el traductor, no se inicia la publicación. Si falla Discord durante un
 La traducción manual heredada de /anunciar conserva su implementación opcional de OpenAI; permanece desactivada con AI_ENABLED=false. Esa configuración no afecta al traductor gratuito de novedades.
 
 ## Datos y operación
+
+En el modo compartido, `src/host-runtime.js` coordina el arranque y la detención, `src/cloud.js` sincroniza instantáneas cifradas de SQLite y `cloud/supabase.sql` implementa un control de 45 segundos con turnos y revisión de datos. La copia local de trabajo está en `data/cloud-state/guardian.sqlite`. Antes de cada petición real de Discord, incluyendo reintentos y peticiones que esperaron un límite de frecuencia, se verifica el control y se sincronizan cambios pendientes. El límite local conservador de 33 segundos usa un reloj monotónico desde el inicio de cada petición; una respuesta tardía o despertar del equipo no extienden el permiso. Las peticiones en curso tienen un tiempo máximo y se cancelan al perder el control. Los guardados se serializan y usan comparación de versiones; los registros de acceso no se incluyen en instantáneas.
+
+El almacenamiento compartido utiliza AES-256-GCM y una clave derivada con HKDF del código privado. Supabase guarda solo la copia cifrada y el hash del código. El cliente usa una clave publicable/anon y una única función limitada; no se distribuyen claves secretas del proyecto. Las tablas privadas tienen RLS y no tienen permisos de lectura de los roles públicos. La activación inicial usa `scripts/cloud-admin.js`; vincular una PC usa `scripts/cloud-client.js`. El cliente instalado no contiene contraseñas de la base PostgreSQL. Las pruebas de PostgreSQL usan PGlite local y credenciales falsas.
+
+### Alternativa manual para instalaciones independientes
+
+Lo siguiente describe el modo anterior, sin comunidad compartida. El equipo configurado con `community.json` usa el relevo automático descrito arriba y no necesita pasar archivos.
 
 El panel de Windows utiliza los mismos scripts y la misma base; no contiene credenciales ni el runtime de Node embebidos. Su fuente está en `launcher/AgenteCanino.cs`. Para reconstruir `Agente-Canino.exe`, ejecutar `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/build-launcher.ps1` en Windows con .NET Framework. No requiere instalar Visual Studio. Se incluye el exe compilado para que el equipo pueda abrirlo directamente. `Pasar a un amigo` guarda una marca local para que reabrir el panel no reinicie esa copia después de exportar; recibir el relevo actualizado elimina la pausa. La selección de anfitrión entre PC sigue siendo manual. La app no se inicia automáticamente al encender Windows.
 

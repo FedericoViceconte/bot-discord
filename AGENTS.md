@@ -21,6 +21,12 @@
 
 ## Desarrollo y operación
 
+- El usuario pidió relevo automático gratuito entre las PC, sin pasarse archivos en cada cambio. El modo activo usa Supabase Free, comunidad pública en community.json y acceso privado en data/cloud-access.json. No contratar planes pagos ni activar facturación.
+- Mantener el control remoto con dueño, epoch y revisión; ninguna PC debe conectar Discord sin adquirirlo ni usar datos locales antiguos si falla el servicio. Conservar el reloj monotónico, los márgenes, la cancelación y la guarda en cada petición de red de Discord, incluso después de límites de frecuencia. Confirmar cambios pendientes en la base compartida antes de enviar una respuesta.
+- La copia de trabajo está en data/cloud-state/guardian.sqlite; el SQLite original es un respaldo previo a la migración. No escribir sobre esa copia antigua como si fuera producción. En modo compartido, instalar canales solo desde el bot activo mediante /instalar.
+- Cada PC se vincula una vez con un código privado. Nunca subir data/cloud-*.json, códigos WO1., secretos de acceso, copias SQLite o tokens a GitHub ni mostrarlos en respuestas. community.json usa una clave publicable; nunca distribuir una clave sb_secret_ o service_role. Las funciones SQL no deben dar lectura pública a las tablas privadas.
+- No afirmar conexión instantánea o disponibilidad con todas las PC apagadas. El permiso remoto vence a los 45 segundos, más el sondeo y arranque; la opción gratuita puede pausarse por inactividad. Mantener la detención coordinada antes de liberar el control y las pruebas de PGlite, vencimiento, doble anfitrión y persistencia.
+
 - Node.js 24.17 o superior; módulos ESM, discord.js y SQLite local de Node.
 - Para cambios de código ejecutar npm test y npm run check. Las pruebas locales no necesitan tokens reales ni deben hacer llamadas a servicios pagos.
 - Para colaborar no hace falta copiar .env ni la base de producción. Cada desarrollador puede usar su propia aplicación y servidor de pruebas de Discord.

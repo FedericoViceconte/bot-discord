@@ -20,6 +20,13 @@ try {
     $errorLog = Join-Path $dataPath 'runtime.err.log'
     $botProcess = Start-Process -FilePath $nodePath -ArgumentList $nodeArguments -WorkingDirectory $botRoot -WindowStyle Hidden -RedirectStandardOutput $outputLog -RedirectStandardError $errorLog -PassThru
     $metadata = @{ pid = $botProcess.Id; startedAt = $botProcess.StartTime.ToUniversalTime().ToString('o'); entryPath = $entryPath }
+    function Save-BotProcessMetadata {
+        try {
+            $runtimeStatus = Get-Content -LiteralPath (Join-Path $dataPath 'host-status.json') -Raw | ConvertFrom-Json
+            if ($runtimeStatus.pid -eq $botProcess.Id -and $runtimeStatus.stopProtocol -eq 1) { $metadata.stopProtocol = 1 }
+        } catch { }
+        $metadata | ConvertTo-Json | Set-Content -LiteralPath $processFile -Encoding UTF8
+    }
     for ($attempt = 0; $attempt -lt 30; $attempt++) {
         Start-Sleep -Milliseconds 500
         if ($botProcess.HasExited) {
@@ -30,14 +37,26 @@ try {
             throw 'El bot se cerro durante el arranque. Revisa data/runtime.err.log (no compartas tokens) y 9-DIAGNOSTICO.cmd.'
         }
         if ((Test-Path -LiteralPath $outputLog) -and ((Get-Content -LiteralPath $outputLog -Raw) -match 'conectado\.')) {
-            $metadata | ConvertTo-Json | Set-Content -LiteralPath $processFile -Encoding UTF8
+            Save-BotProcessMetadata
             Write-Host 'Agente Canino CONECTADO a Discord y funcionando en segundo plano.'
-            Write-Host 'Podes cerrar esta ventana. Para detenerlo: 6-DETENER.cmd. Para pasarlo a un amigo: 7-PREPARAR-RELEVO.cmd.'
+            if ((Test-Path -LiteralPath 'community.json') -or (Test-Path -LiteralPath 'data/cloud-access.json')) {
+                Write-Host 'Relevo automatico activado. Tus amigos vinculan su PC una sola vez desde el exe; despues solo lo abren.'
+                Write-Host 'Podes cerrar esta ventana. Para detener esta copia: 6-DETENER.cmd o el boton de la app.'
+            } else { Write-Host 'Podes cerrar esta ventana. Para detenerlo: 6-DETENER.cmd. Para pasarlo a un amigo: 7-PREPARAR-RELEVO.cmd.' }
             Write-Host 'No arranca solo al encender Windows. Abri 5-INICIAR.cmd cada vez que vayas a alojarlo.'
             exit 0
         }
+        try {
+            $runtimeStatus = Get-Content -LiteralPath (Join-Path $dataPath 'host-status.json') -Raw | ConvertFrom-Json
+            if ($runtimeStatus.pid -eq $botProcess.Id -and $runtimeStatus.state -eq 'waiting') {
+                Save-BotProcessMetadata
+                Write-Host 'EN ESPERA AUTOMATICA: esta PC tomara el relevo cuando quede disponible.'
+                Write-Host 'Podes cerrar esta ventana. El bot sigue esperando en segundo plano.'
+                exit 0
+            }
+        } catch { }
     }
-    $metadata | ConvertTo-Json | Set-Content -LiteralPath $processFile -Encoding UTF8
+    Save-BotProcessMetadata
     Write-Host 'El proceso sigue abierto, pero Discord todavia no confirmo la conexion. Revisa Internet y data/runtime.log.'
     Write-Host 'No inicies otra copia. Para cancelarlo usa 6-DETENER.cmd.'
     exit 2

@@ -51,7 +51,7 @@ try {
             Write-Output 'Instalando los componentes del bot. La primera vez necesita Internet.'
             $npmCli = Join-Path (Split-Path -Parent $nodePath) 'node_modules\npm\bin\npm-cli.js'
             if (-not (Test-Path -LiteralPath $npmCli)) { throw 'Esta instalacion de Node no incluye npm. Usa una instalacion completa o el runtime portatil.' }
-            & $nodePath $npmCli ci --no-audit --no-fund
+            & $nodePath $npmCli ci --omit=dev --no-audit --no-fund
             if ($LASTEXITCODE -ne 0) { throw 'No se pudieron instalar los componentes. Revisa Internet y volve a intentar.' }
         }
     }

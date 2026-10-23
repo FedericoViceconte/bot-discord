@@ -1,6 +1,6 @@
 import { Client,Events,GatewayIntentBits,PermissionFlagsBits as P } from 'discord.js';
 import { once } from 'node:events';
-import { writeFileSync } from 'node:fs';
+import { writeFileSync,existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { readSettings,requireDiscord } from '../src/settings.js';
 import { Store } from '../src/store.js';
@@ -11,6 +11,7 @@ const settings=readSettings();
 let client,store;
 const deadline=setTimeout(()=>{console.error('La instalación excedió el tiempo previsto. Los recursos guardados se reutilizan al repetir.');client?.destroy();store?.close();process.exit(1);},300000);
 try {
+  if(existsSync('community.json') || existsSync('data/cloud-access.json'))throw new Error('En modo compartido usá /instalar desde el bot activo de Discord. Este instalador local no modifica la copia sincronizada.');
   requireDiscord(settings);
   store=new Store(settings.dataDir);
   client=new Client({intents:[GatewayIntentBits.Guilds,GatewayIntentBits.GuildMembers],allowedMentions:{parse:[],repliedUser:false}});

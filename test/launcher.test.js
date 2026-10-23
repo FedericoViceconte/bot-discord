@@ -16,7 +16,7 @@ function fixture(t) {
   for (const name of ['scripts', 'src', 'data']) mkdirSync(join(root, name));
   writeFileSync(join(root, 'package.json'), '{"type":"module"}');
   for (const name of ['bot-process.ps1', 'node-runtime.ps1', 'launcher-action.ps1', 'prepare-pc.ps1', 'start-background.ps1', 'stop-background.ps1', 'doctor.js', 'handoff.js']) copyFileSync(new URL(`../scripts/${name}`, import.meta.url), join(root, 'scripts', name));
-  for (const name of ['settings.js', 'host-lock.js', 'handoff.js']) copyFileSync(new URL(`../src/${name}`, import.meta.url), join(root, 'src', name));
+  for (const name of ['settings.js', 'host-lock.js', 'handoff.js', 'cloud-access.js']) copyFileSync(new URL(`../src/${name}`, import.meta.url), join(root, 'src', name));
   for (const name of ['discord.js', '@napi-rs/canvas']) {
     mkdirSync(join(root, 'node_modules', name), { recursive: true });
     writeFileSync(join(root, 'node_modules', name, 'package.json'), '{}');
