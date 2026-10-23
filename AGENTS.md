@@ -25,5 +25,6 @@
 - Para cambios de código ejecutar npm test y npm run check. Las pruebas locales no necesitan tokens reales ni deben hacer llamadas a servicios pagos.
 - Para colaborar no hace falta copiar .env ni la base de producción. Cada desarrollador puede usar su propia aplicación y servidor de pruebas de Discord.
 - Ejecutar una sola instancia por servidor/base. No iniciar otra instancia de producción mientras la anterior siga activa.
+- El alojamiento gratuito por turnos está documentado en RELEVO-ENTRE-AMIGOS.md. Mantener el cifrado y las exclusiones de .wohost/relevos/. El botón 7 detiene y exporta la base actual; el 8 importa con respaldo; el 5 inicia en segundo plano. No incluir credenciales ni copias de producción en pruebas, commits o respuestas. El bloqueo es local; nunca afirmar que detecta otra PC o realiza un relevo automático.
 - En Windows, los scripts de inicio y reinicio comprueban el PID, fecha y ruta del proceso. No detener procesos que no pertenezcan a este bot.
 - Guardar las credenciales del despliegue en el hosting; conservar SQLite en almacenamiento persistente. Publicar código en GitHub no migra el proceso que actualmente se ejecuta en la PC.

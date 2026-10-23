@@ -15,7 +15,7 @@ function checkTree(directory) {
     }
   }
 }
-checkTree('src'); checkTree('test');
+checkTree('src'); checkTree('test'); checkTree('scripts');
 for (const l of LANGUAGES) {
   ticketModal('general',l).toJSON(); suggestionModal(l).toJSON();
   for (const kind of ['central','idiomas','tickets','sugerencias']) {

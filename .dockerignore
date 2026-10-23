@@ -6,6 +6,8 @@ data
 test
 docs
 *.zip
+relevos
+*.wohost
 *.log
 *.sqlite*
 *.db*

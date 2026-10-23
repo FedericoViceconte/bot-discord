@@ -8,10 +8,12 @@ import { welcomeMember,welcomeAfterLanguage } from './welcome.js';
 import {cleanupTickets} from './tickets.js';
 import {FreeTranslator} from './free-translate.js';
 import {Newsroom} from './newsroom.js';
+import {acquireHostLock} from './host-lock.js';
 
-let client, store;
+let client, store, releaseHost;
 try {
   const settings=readSettings(); requireDiscord(settings);
+  releaseHost=await acquireHostLock(settings);
   store=new Store(settings.dataDir);
   client=new Client({ intents:[GatewayIntentBits.Guilds,GatewayIntentBits.GuildMembers,GatewayIntentBits.GuildMessages,GatewayIntentBits.MessageContent],allowedMentions:{ parse:[],repliedUser:false } });
   const locks=new Locks();
@@ -90,9 +92,9 @@ try {
     }
   });
   client.on(Events.Error,error=>console.error(`[Discord] ${error.code || error.name}`));
-  for (const signal of ['SIGINT','SIGTERM']) process.once(signal,()=>{ client.destroy(); store.close(); process.exit(0); });
+  for (const signal of ['SIGINT','SIGTERM']) process.once(signal,async()=>{ client.destroy(); store.close(); await releaseHost?.(); process.exit(0); });
   await client.login(settings.token);
 } catch (error) {
   console.error(`No se pudo iniciar WO Guardian: ${error.code || error.message.replace(/Bot\s+\S+/g,'[redacted]')}`);
-client?.destroy(); store?.close(); process.exitCode=1;
+client?.destroy(); store?.close(); await releaseHost?.(); process.exitCode=1;
 }

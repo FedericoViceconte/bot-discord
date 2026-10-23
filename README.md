@@ -68,9 +68,13 @@ La traducción manual heredada de /anunciar conserva su implementación opcional
 
 ## Datos y operación
 
+Para alojarlo gratis por turnos en las PC del equipo: **[RELEVO-ENTRE-AMIGOS.md](RELEVO-ENTRE-AMIGOS.md)**. `5-INICIAR.cmd` inicia en segundo plano y espera confirmación de conexión; `6-DETENER.cmd` detiene solo el proceso registrado de esta carpeta. `7-PREPARAR-RELEVO.cmd` detiene el bot y genera una copia portátil cifrada con AES-256-GCM y una clave derivada mediante scrypt. `8-RECIBIR-RELEVO.cmd` pide contraseña, comprueba el archivo y conserva un respaldo antes de reemplazar la base y `.env`. Solo traslada las credenciales de Discord, desactiva OpenAI y normaliza `DATA_DIR=./data`; no incluye claves de otros servicios. Si la PC receptora usa otra ruta de datos, se requiere recibir el relevo en una descarga nueva. `9-DIAGNOSTICO.cmd` valida requisitos locales sin mostrar el token. Se requiere Windows con Node.js 24.17 o superior; el asistente admite bases de hasta 128 MiB.
+
+Siempre generar un relevo nuevo desde el anfitrión actual. No usar copias antiguas: no existe mezcla automática de bases de datos ni elección automática del anfitrión. El bloqueo de arranque evita instancias simultáneas del mismo bot en una PC, incluso en carpetas distintas; entre varias PC deben coordinar el cambio manualmente. Los archivos `.wohost` y `relevos/` se excluyen tanto de Git como del contexto de Docker.
+
 La configuración, idiomas, ingresos, tickets, sugerencias, votos y anuncios se guardan en data/guardian.sqlite. No publiques data/, .env ni credenciales. Para una copia consistente, detené el bot y copiá toda la carpeta data/ junto con .env a un lugar privado.
 
-Ejecutá una sola instancia del bot por base de datos. El proceso en segundo plano se administra con scripts/start-background.ps1 y scripts/restart-background.ps1; comprueban el PID, la fecha de inicio y la ruta antes de detener o reutilizar un proceso. Sus salidas están en data/runtime.log y data/runtime.err.log. No se instaló inicio automático de Windows.
+Ejecutá una sola instancia del bot por base de datos. El proceso en segundo plano se administra con scripts/start-background.ps1, scripts/stop-background.ps1 y scripts/restart-background.ps1; comprueban el PID, la fecha de inicio y la ruta antes de detener o reutilizar un proceso. Sus salidas están en data/runtime.log y data/runtime.err.log. No se instaló inicio automático de Windows.
 
 Para registrar comandos: npm run register. Para validar código y componentes: npm run check. Para probar: npm test. npm run audit-server comprueba permisos y paneles reales. Se puede indicar una copia de permisos reciente con --baseline RUTA.
 
