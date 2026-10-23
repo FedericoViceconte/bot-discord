@@ -51,6 +51,7 @@ test('relevo cifra los datos y rechaza contraseña incorrecta o alteraciones', (
 test('relevo entre dos carpetas conserva configuración y datos WAL sin llevar otras claves', async t => {
   const from = source(t), destination = directory(t);
   const { output } = await exportHandoff(from.root, password);
+  assert.equal(existsSync(join(from.root, 'data/host-handoff.json')), true);
   const sealed = readFileSync(output, 'utf8');
   assert.ok(!sealed.includes('fake_token_for_tests'));
   const decoded = openHandoff(sealed, password);
@@ -80,6 +81,7 @@ test('cada vuelta lleva los cambios del nuevo anfitrión, no reutiliza la copia 
   // The exporting source's open connection is closed before receiving a return.
   first.close();
   const received = await importHandoff(first.root, returning.output, password);
+  assert.equal(existsSync(join(first.root, 'data/host-handoff.json')), false);
   assert.ok(received.backupDirectory);
   assert.equal(readDatabase(join(first.root, 'data/guardian.sqlite'), db => db.prepare('SELECT code FROM languages WHERE user=?').get('member').code), 'de');
   assert.equal(readDatabase(join(received.backupDirectory, 'guardian.sqlite'), db => db.prepare('SELECT code FROM languages WHERE user=?').get('member').code), 'es');

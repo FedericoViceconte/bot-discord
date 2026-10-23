@@ -14,7 +14,7 @@ test('Windows: iniciar, detectar duplicado, detener y recuperar PID obsoleto en 
   const root = mkdtempSync(join(tmpdir(), 'wo windows hosting '));
   mkdirSync(join(root, 'scripts')); mkdirSync(join(root, 'src'));
   writeFileSync(join(root, 'package.json'), '{"type":"module"}');
-  for (const name of ['bot-process.ps1', 'start-background.ps1', 'stop-background.ps1', 'doctor.js']) copyFileSync(new URL(`../scripts/${name}`, import.meta.url), join(root, 'scripts', name));
+  for (const name of ['bot-process.ps1', 'node-runtime.ps1', 'start-background.ps1', 'stop-background.ps1', 'doctor.js']) copyFileSync(new URL(`../scripts/${name}`, import.meta.url), join(root, 'scripts', name));
   for (const name of ['settings.js', 'host-lock.js']) copyFileSync(new URL(`../src/${name}`, import.meta.url), join(root, 'src', name));
   writeFileSync(join(root, '.env'), `DISCORD_TOKEN=fake_token_for_tests\nDISCORD_CLIENT_ID=555555555555555555\nDISCORD_GUILD_ID=666666666666666666\n`);
   for (const name of ['discord.js', '@napi-rs/canvas']) {

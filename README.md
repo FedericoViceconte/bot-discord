@@ -2,7 +2,9 @@
 
 Bot de comunidad con bienvenida, idiomas, soporte privado, sugerencias y anuncios. OpenAI está desactivado y no hay asistente ni reproducción de voz. Las novedades automáticas se traducen gratuitamente con MyMemory.
 
-Para instalar en Windows, seguí LEEME.md. Requiere Node.js 24.17 o superior. La PC debe permanecer encendida; también se incluye Docker para un servidor permanente.
+En Windows, extraé la carpeta completa y abrí **Agente-Canino.exe**. Tiene botones para iniciar, detener, preparar la PC y pasar o recibir el bot de un amigo; no hace falta abrir los CMD. Al abrir la app inicia la copia configurada, excepto si preparaste un relevo y quedó en pausa. Podés cerrar la ventana: el bot sigue en segundo plano. Para tenerlo en el escritorio, creá un acceso directo; no muevas el exe fuera de su carpeta.
+
+La primera preparación usa Node.js 24.17 o superior ya instalado o descarga una versión portátil de la rama 24 del [sitio oficial de Node.js](https://nodejs.org/dist/index.json), comprueba el SHA-256 del archivo y la guarda en `.runtime/`. No necesita permisos de Administrador ni modifica el inicio o PATH de Windows. Instala los componentes con el lockfile del repositorio; necesita Internet la primera vez. La PC debe permanecer encendida; también se incluye Docker para un servidor permanente. Los CMD anteriores siguen disponibles.
 
 ## Código compartido
 
@@ -67,6 +69,8 @@ Si falla el traductor, no se inicia la publicación. Si falla Discord durante un
 La traducción manual heredada de /anunciar conserva su implementación opcional de OpenAI; permanece desactivada con AI_ENABLED=false. Esa configuración no afecta al traductor gratuito de novedades.
 
 ## Datos y operación
+
+El panel de Windows utiliza los mismos scripts y la misma base; no contiene credenciales ni el runtime de Node embebidos. Su fuente está en `launcher/AgenteCanino.cs`. Para reconstruir `Agente-Canino.exe`, ejecutar `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/build-launcher.ps1` en Windows con .NET Framework. No requiere instalar Visual Studio. Se incluye el exe compilado para que el equipo pueda abrirlo directamente. `Pasar a un amigo` guarda una marca local para que reabrir el panel no reinicie esa copia después de exportar; recibir el relevo actualizado elimina la pausa. La selección de anfitrión entre PC sigue siendo manual. La app no se inicia automáticamente al encender Windows.
 
 Para alojarlo gratis por turnos en las PC del equipo: **[RELEVO-ENTRE-AMIGOS.md](RELEVO-ENTRE-AMIGOS.md)**. `5-INICIAR.cmd` inicia en segundo plano y espera confirmación de conexión; `6-DETENER.cmd` detiene solo el proceso registrado de esta carpeta. `7-PREPARAR-RELEVO.cmd` detiene el bot y genera una copia portátil cifrada con AES-256-GCM y una clave derivada mediante scrypt. `8-RECIBIR-RELEVO.cmd` pide contraseña, comprueba el archivo y conserva un respaldo antes de reemplazar la base y `.env`. Solo traslada las credenciales de Discord, desactiva OpenAI y normaliza `DATA_DIR=./data`; no incluye claves de otros servicios. Si la PC receptora usa otra ruta de datos, se requiere recibir el relevo en una descarga nueva. `9-DIAGNOSTICO.cmd` valida requisitos locales sin mostrar el token. Se requiere Windows con Node.js 24.17 o superior; el asistente admite bases de hasta 128 MiB.
 

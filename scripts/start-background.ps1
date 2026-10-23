@@ -1,6 +1,8 @@
 try {
     . (Join-Path $PSScriptRoot 'bot-process.ps1')
     Set-Location -LiteralPath $botRoot
+    . (Join-Path $PSScriptRoot 'node-runtime.ps1')
+    Use-BotNode | Out-Null
     $existingProcess = Get-ManagedBotProcess
     if ($existingProcess) {
         Write-Host "Agente Canino ya se esta ejecutando. PID $($existingProcess.Id)"

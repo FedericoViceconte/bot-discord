@@ -2,6 +2,8 @@ param([ValidateSet('export','import')][string]$Mode)
 try {
     . (Join-Path $PSScriptRoot 'bot-process.ps1')
     Set-Location -LiteralPath $botRoot
+    . (Join-Path $PSScriptRoot 'node-runtime.ps1')
+    Use-BotNode | Out-Null
     if (-not (Get-Command node.exe -ErrorAction SilentlyContinue)) { throw 'Instala Node.js 24.17 o superior y abri 1-INSTALAR.cmd.' }
     & node.exe -e "const [a,b]=process.versions.node.split('.').map(Number);process.exit(a>24||(a===24&&b>=17)?0:1)"
     if ($LASTEXITCODE -ne 0) { throw 'Actualiza Node.js a 24.17 o superior antes de recibir o preparar el relevo.' }

@@ -1,5 +1,7 @@
 # WO Guardian — empezá por acá
 
+**En Windows podés usar Agente-Canino.exe:** extraé todos los archivos y abrilo dentro de la carpeta del bot. Se encarga de preparar los componentes y tiene botones para iniciar, detener, pasar o recibir un relevo. No necesitás abrir los CMD. Si ya tenés los datos del bot, intenta iniciarlo al abrir la app; después podés cerrar la ventana y el bot sigue funcionando. Podés crear un acceso directo en el escritorio. Para continuar el bot de tus amigos, elegí **Recibir y comenzar** con el último archivo `.wohost` y su contraseña.
+
 El bot está creado. **Si sos del equipo y querés alojar el bot existente de un amigo, seguí [RELEVO-ENTRE-AMIGOS.md](RELEVO-ENTRE-AMIGOS.md). No crees otra aplicación ni vuelvas a instalar los canales.** GitHub no contiene el token ni la base de datos; el anfitrión actual prepara un relevo cifrado con el botón 7 y vos lo recibís con el 8.
 
 Los siguientes pasos son para crear un bot nuevo en otro servidor:

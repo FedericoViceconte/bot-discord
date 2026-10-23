@@ -2,6 +2,17 @@
 
 Cada uno puede usar su PC con Windows. Solo una PC ejecuta el bot a la vez. Tener Discord abierto no inicia el programa. Si todas las PC están apagadas, el bot estará desconectado. El relevo es manual; no hay detección de otras computadoras ni sincronización por GitHub.
 
+## Con la app, sin CMD
+
+1. Descargar la versión nueva de GitHub, extraer toda la carpeta y abrir **Agente-Canino.exe**. Dejarlo en esa carpeta; para el escritorio se puede crear un acceso directo.
+2. El anfitrión actual elige **Pasar a un amigo**, confirma la parada y crea una contraseña. La app abre `relevos/` con el archivo cifrado nuevo. Le pasa ese archivo por privado a su amigo y la contraseña por separado.
+3. El amigo abre el exe, elige **Recibir y comenzar**, confirma que el otro anfitrión ya detuvo su copia, selecciona el último archivo e ingresa la contraseña. La app prepara los componentes que falten, recibe los datos con respaldo e inicia el bot. La primera vez necesita Internet; si falta Node, usa una copia portátil sin instalarla en Windows.
+4. Para devolver el bot, el nuevo anfitrión genera otro relevo con **Pasar a un amigo**. No devuelve el archivo viejo que recibió.
+
+Al abrir de nuevo la app inicia el bot si ya tiene sus datos, excepto si esa PC preparó un relevo: en ese caso queda en pausa hasta recibir una copia actualizada. Si el amigo nunca llegó a usar el relevo y está detenido, se puede elegir **Iniciar bot** y confirmar la reanudación. La app no comprueba si otra PC está conectada. Cerrar la ventana deja el bot funcionando; **Detener en esta PC** lo apaga. Encender Windows no abre la app por sí solo.
+
+Los pasos siguientes con CMD son una alternativa a la ventana; usan los mismos datos y no necesitan ejecutarse si usás la app.
+
 ## Primera vez en la PC de tu amigo
 
 1. Descargar o actualizar el código de https://github.com/federicoviceconte5-jpg/bot-discord. Si descarga un ZIP, primero debe extraerlo entero y abrir la carpeta que contiene los archivos numerados.

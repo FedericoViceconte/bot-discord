@@ -76,6 +76,10 @@ export async function exportHandoff(root, password) {
     mkdirSync(outputDirectory, { recursive: true });
     const output = join(outputDirectory, `WO-relevo-${payload.createdAt.replace(/[:.]/g, '-')}.wohost`);
     writeFileSync(output, sealed, { flag: 'wx', mode: 0o600 });
+    // Opening the launcher after a handoff must not silently resume this older copy.
+    const controlDirectory = join(root, 'data');
+    mkdirSync(controlDirectory, { recursive: true });
+    writeFileSync(join(controlDirectory, 'host-handoff.json'), JSON.stringify({ id: payload.id, createdAt: payload.createdAt }), { mode: 0o600 });
     return { output, clientId: settings.clientId, guildId: settings.guildId };
   } finally { rmSync(temp, { recursive: true, force: true }); }
 }
@@ -126,6 +130,7 @@ export async function importHandoff(root, file, password) {
       else rmSync(envPath, { force: true });
       throw error;
     }
+    rmSync(join(data, 'host-handoff.json'), { force: true });
     return { clientId: settings.clientId, guildId: settings.guildId, createdAt: payload.createdAt, backupDirectory };
   } finally { rmSync(temp, { recursive: true, force: true }); }
 }

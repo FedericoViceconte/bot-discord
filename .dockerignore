@@ -1,4 +1,8 @@
 node_modules
+.runtime
+*.exe
+*.pdb
+launcher
 .env
 .env.*
 data
