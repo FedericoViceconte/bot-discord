@@ -2,7 +2,7 @@
 
 ## Repositorio compartido
 
-- Repositorio: https://github.com/federicoviceconte5-jpg/bot-discord.git.
+- Repositorio: https://github.com/FedericoViceconte/bot-discord.git.
 - Después de cada cambio solicitado en el bot, hacer el commit y subirlo a este repositorio.
 - Antes de modificar, revisar el estado local y traer las referencias remotas. Integrar los cambios de los compañeros sin sobrescribir trabajo ajeno. No usar push forzado ni restablecer cambios de otros.
 - Revisar los archivos preparados para el commit. Subir únicamente código, documentación, pruebas y recursos de ejemplo del bot.

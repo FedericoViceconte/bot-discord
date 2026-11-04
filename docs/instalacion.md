@@ -2,7 +2,7 @@
 
 ## Equipo de WO Definitive Edition
 
-**Para este equipo, descargá `WO-Guardian-Windows.zip` desde la [última versión publicada](https://github.com/federicoviceconte5-jpg/bot-discord/releases/latest), extraelo entero, abrí Agente-Canino.exe y seguí [alojamiento-automatico.md](alojamiento-automatico.md).** Solo se vincula cada PC una vez con el código de un administrador. Después, basta con abrir el exe: si otra PC está activa, espera y toma el relevo automáticamente. No hay que pasar archivos ni copiar el token.
+**Para este equipo, descargá `WO-Guardian-Windows.zip` desde la [última versión publicada](https://github.com/FedericoViceconte/bot-discord/releases/latest), extraelo entero, abrí Agente-Canino.exe y seguí [alojamiento-automatico.md](alojamiento-automatico.md).** Solo se vincula cada PC una vez con el código de un administrador. Después, basta con abrir el exe: si otra PC está activa, espera y toma el relevo automáticamente. No hay que pasar archivos ni copiar el token.
 
 Agente-Canino.exe prepara los componentes y tiene botones para iniciar, detener, pasar o recibir un relevo. Tiene que quedar dentro de la carpeta del bot; para el escritorio, creá un acceso directo. Si ya tenés los datos del bot, intenta iniciarlo al abrir la app; después podés cerrar la ventana y el bot sigue funcionando.
 

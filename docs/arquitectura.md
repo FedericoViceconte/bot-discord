@@ -43,7 +43,7 @@ Guía para el equipo: [alojamiento-automatico.md](alojamiento-automatico.md).
 
 ## Panel de Windows
 
-El panel Agente-Canino.exe utiliza los mismos scripts y la misma base; no contiene credenciales ni el runtime de Node embebidos. Su fuente está en `launcher/AgenteCanino.cs`. Para reconstruirlo, ejecutar `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/build-launcher.ps1` en Windows con .NET Framework; no requiere instalar Visual Studio. El exe compilado no se versiona en Git: se publica en [Releases](https://github.com/federicoviceconte5-jpg/bot-discord/releases) dentro de `WO-Guardian-Windows.zip`, junto con el resto de la carpeta.
+El panel Agente-Canino.exe utiliza los mismos scripts y la misma base; no contiene credenciales ni el runtime de Node embebidos. Su fuente está en `launcher/AgenteCanino.cs`. Para reconstruirlo, ejecutar `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/build-launcher.ps1` en Windows con .NET Framework; no requiere instalar Visual Studio. El exe compilado no se versiona en Git: se publica en [Releases](https://github.com/FedericoViceconte/bot-discord/releases) dentro de `WO-Guardian-Windows.zip`, junto con el resto de la carpeta.
 
 La primera preparación usa Node.js 24.17 o superior ya instalado o descarga una versión portátil de la rama 24 del [sitio oficial de Node.js](https://nodejs.org/dist/index.json), comprueba el SHA-256 del archivo y la guarda en `.runtime/`. No necesita permisos de Administrador ni modifica el inicio o PATH de Windows. Instala los componentes con el lockfile del repositorio; necesita Internet la primera vez.
 

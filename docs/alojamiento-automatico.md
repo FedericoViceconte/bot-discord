@@ -4,7 +4,7 @@ El modo compartido usa el proyecto gratuito de Supabase del equipo. Los datos se
 
 ## Una sola vez por PC
 
-1. Descargar `WO-Guardian-Windows.zip` desde la [última versión publicada](https://github.com/federicoviceconte5-jpg/bot-discord/releases/latest) y extraerlo entero. Abrir **Agente-Canino.exe** dentro de esa carpeta; se puede crear un acceso directo en el escritorio.
+1. Descargar `WO-Guardian-Windows.zip` desde la [última versión publicada](https://github.com/FedericoViceconte/bot-discord/releases/latest) y extraerlo entero. Abrir **Agente-Canino.exe** dentro de esa carpeta; se puede crear un acceso directo en el escritorio.
 2. Un administrador ya vinculado abre **Código para el equipo**, elige **Copiar código** y lo comparte por privado con los otros administradores. Ese código permite alojar el bot: no publicarlo en GitHub, canales del servidor ni capturas.
 3. En la PC nueva, elegir **Vincular esta PC**, pegar ese código completo y confirmar. La app prepara los componentes que falten, comprueba el acceso y comienza. No hace falta crear otro bot, copiar el token, tocar .env ni volver a instalar los canales de Discord.
 

@@ -1,6 +1,6 @@
 # WO Guardian · Definitive Edition
 
-[![Pruebas](https://github.com/federicoviceconte5-jpg/bot-discord/actions/workflows/ci.yml/badge.svg)](https://github.com/federicoviceconte5-jpg/bot-discord/actions/workflows/ci.yml)
+[![Pruebas](https://github.com/FedericoViceconte/bot-discord/actions/workflows/ci.yml/badge.svg)](https://github.com/FedericoViceconte/bot-discord/actions/workflows/ci.yml)
 ![Node.js](https://img.shields.io/badge/Node.js-24-339933?logo=nodedotjs&logoColor=white)
 ![discord.js](https://img.shields.io/badge/discord.js-14-5865F2?logo=discord&logoColor=white)
 
@@ -86,7 +86,7 @@ Nunca subas `.env`, `data/`, tokens ni bases de datos. Las pautas para colaborar
 - [Relevo manual](docs/relevo-manual.md): instalaciones independientes
 - [Arquitectura y operación](docs/arquitectura.md): tickets, novedades, sincronización y procesos
 
-Para el equipo: el panel listo para usar (`WO-Guardian-Windows.zip`) se descarga desde [Releases](https://github.com/federicoviceconte5-jpg/bot-discord/releases/latest).
+Para el equipo: el panel listo para usar (`WO-Guardian-Windows.zip`) se descarga desde [Releases](https://github.com/FedericoViceconte/bot-discord/releases/latest).
 
 ## Licencia
 
