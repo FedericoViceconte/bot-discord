@@ -1,5 +1,9 @@
 # WO Guardian · Definitive Edition
 
+[![Pruebas](https://github.com/federicoviceconte5-jpg/bot-discord/actions/workflows/ci.yml/badge.svg)](https://github.com/federicoviceconte5-jpg/bot-discord/actions/workflows/ci.yml)
+![Node.js](https://img.shields.io/badge/Node.js-24-339933?logo=nodedotjs&logoColor=white)
+![discord.js](https://img.shields.io/badge/discord.js-14-5865F2?logo=discord&logoColor=white)
+
 Bot de Discord para la comunidad de [WO Definitive Edition](https://wo-definitive.github.io/), un juego 2D multijugador de artillería por turnos. Recibe a los nuevos miembros en cinco idiomas, gestiona tickets de soporte y sugerencias, y publica las novedades del juego traducidas automáticamente a cada comunidad.
 
 El equipo lo aloja gratis en sus propias PC: un panel de Windows coordina por turnos cuál de ellas ejecuta el bot, con los datos sincronizados y cifrados.
@@ -70,6 +74,8 @@ npm start
 npm test               # pruebas automatizadas
 npm run check          # validación de código y componentes
 ```
+
+GitHub Actions corre las pruebas y la validación en Linux y en Windows en cada cambio, y en Windows también compila el panel `Agente-Canino.exe`.
 
 Nunca subas `.env`, `data/`, tokens ni bases de datos. Las pautas para colaborar están en [AGENTS.md](AGENTS.md).
 
