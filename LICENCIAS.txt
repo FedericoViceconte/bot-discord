@@ -1,0 +1,36 @@
+WO Guardian · Definitive Edition — componentes de terceros
+
+© 2026 Equipo de WO Definitive Edition. Todos los derechos reservados.
+El aviso COPYRIGHT.txt detalla los derechos del contenido original.
+
+El repositorio no incluye node_modules. Las dependencias se instalan con npm a
+partir de package-lock.json y conservan sus licencias; después de instalarlas,
+cada texto está en node_modules/<paquete>/LICENSE.
+
+Dependencias del bot:
+
+- discord.js 14: Apache License 2.0.
+  https://github.com/discordjs/discord.js
+- @napi-rs/canvas: MIT. Genera las tarjetas de bienvenida.
+  https://github.com/Brooooooklyn/canvas
+
+Solo para las pruebas automáticas:
+
+- @electric-sql/pglite: Apache License 2.0. PostgreSQL local para probar el
+  alojamiento compartido sin servicios reales.
+  https://github.com/electric-sql/pglite
+
+Entorno de ejecución:
+
+- Node.js 24: MIT, con las licencias de sus componentes. El panel de Windows
+  descarga una versión portátil desde nodejs.org y comprueba su SHA-256; no se
+  incluye en el repositorio. https://github.com/nodejs/node/blob/main/LICENSE
+- El panel Agente-Canino.exe (fuente en launcher/AgenteCanino.cs) usa
+  .NET Framework, incluido en Windows.
+
+Servicios externos, usados según sus propias condiciones:
+
+- Discord y su API para bots: términos para desarrolladores de Discord.
+- MyMemory, para traducir las novedades:
+  https://mymemory.translated.net/doc/usagelimits.php
+- Supabase, para el alojamiento compartido entre PC: https://supabase.com/terms

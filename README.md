@@ -81,3 +81,7 @@ Nunca subas `.env`, `data/`, tokens ni bases de datos. Las pautas para colaborar
 - [Arquitectura y operación](docs/arquitectura.md): tickets, novedades, sincronización y procesos
 
 Para el equipo: el panel listo para usar (`WO-Guardian-Windows.zip`) se descarga desde [Releases](https://github.com/federicoviceconte5-jpg/bot-discord/releases/latest).
+
+## Licencia
+
+© 2026 Equipo de WO Definitive Edition (Federico Viceconte y Rodriigo24). Todos los derechos reservados: ver [COPYRIGHT.txt](COPYRIGHT.txt). Las bibliotecas y servicios de terceros conservan sus licencias, detalladas en [LICENCIAS.txt](LICENCIAS.txt).

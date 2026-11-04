@@ -1,0 +1,16 @@
+WO Guardian · Definitive Edition
+© 2026 Equipo de WO Definitive Edition (Federico Viceconte y Rodriigo24).
+Todos los derechos reservados.
+
+Bot de comunidad desarrollado para WO Definitive Edition.
+Titular de los derechos de autor del proyecto: el equipo de WO Definitive Edition,
+representado en este repositorio por Federico Viceconte y Rodriigo24.
+
+Este aviso se aplica al código, la documentación y los recursos originales del
+proyecto en la medida en que sean susceptibles de protección por derechos de
+autor. Las bibliotecas, herramientas y servicios de terceros conservan sus
+licencias y condiciones. Consultar LICENCIAS.txt.
+
+No se concede una licencia general para redistribuir, vender o modificar el
+proyecto. Cualquier autorización adicional debe solicitarse al equipo de
+WO Definitive Edition.
