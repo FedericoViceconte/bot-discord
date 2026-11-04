@@ -4,7 +4,7 @@ El modo compartido usa el proyecto gratuito de Supabase del equipo. Los datos se
 
 ## Una sola vez por PC
 
-1. Descargar la carpeta completa actualizada de GitHub y extraerla del ZIP. Abrir **Agente-Canino.exe** dentro de esa carpeta; se puede crear un acceso directo en el escritorio.
+1. Descargar `WO-Guardian-Windows.zip` desde la [última versión publicada](https://github.com/federicoviceconte5-jpg/bot-discord/releases/latest) y extraerlo entero. Abrir **Agente-Canino.exe** dentro de esa carpeta; se puede crear un acceso directo en el escritorio.
 2. Un administrador ya vinculado abre **Código para el equipo**, elige **Copiar código** y lo comparte por privado con los otros administradores. Ese código permite alojar el bot: no publicarlo en GitHub, canales del servidor ni capturas.
 3. En la PC nueva, elegir **Vincular esta PC**, pegar ese código completo y confirmar. La app prepara los componentes que falten, comprueba el acceso y comienza. No hace falta crear otro bot, copiar el token, tocar .env ni volver a instalar los canales de Discord.
 
@@ -27,8 +27,8 @@ Cada anfitrión debe tener la PC encendida y conectada a Internet. Si todas las 
 
 ## Servicio gratuito y recuperación
 
-El [plan Free de Supabase](https://supabase.com/pricing) no tiene cuota mensual de pago y dispone de límites de almacenamiento y transferencia. Sus proyectos pueden pausarse después de una semana de inactividad; si sucede, un administrador tiene que reactivarlo desde el panel. No se contrató un plan pago ni se configuró una tarjeta. El asistente admite bases locales de hasta 8 MiB por copia cifrada. Los adjuntos siguen alojados en Discord; no se guardan imágenes y videos dentro de esta base.
+El [plan Free de Supabase](https://supabase.com/pricing) no tiene cuota mensual de pago y dispone de límites de almacenamiento y transferencia. Sus proyectos pueden pausarse después de una semana de inactividad; si sucede, un administrador tiene que reactivarlo desde el panel. El asistente admite bases locales de hasta 8 MiB por copia cifrada. Los adjuntos siguen alojados en Discord; no se guardan imágenes y videos dentro de esta base.
 
 El bot conserva permisos, idiomas, tickets, sugerencias y trabajos de novedades. Antes de efectuar una solicitud a Discord, confirma que los cambios anteriores están guardados en la copia compartida. La base usa un dueño, un número de turno creciente y una versión de datos para rechazar a una PC anterior, incluso si despierta después de suspenderse. Si falla el guardado o vence el permiso, esa PC cancela solicitudes y deja de responder. Las peticiones que Discord ya haya recibido se recuperan según las reglas de cada función; este sistema no promete exactamente una ejecución para todas las acciones externas.
 
-Para el mantenimiento, seguir AGENTS.md. No borrar `data/cloud-access.json` ni permitir que scripts antiguos escriban sobre la copia compartida. La base local original anterior a la migración se conserva como respaldo; no usarla para iniciar otra instancia de producción.
+Para el mantenimiento, seguir [AGENTS.md](../AGENTS.md). No borrar `data/cloud-access.json` ni permitir que scripts antiguos escriban sobre la copia compartida. La base local original anterior a la migración se conserva como respaldo; no usarla para iniciar otra instancia de producción.

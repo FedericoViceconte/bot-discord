@@ -1,6 +1,6 @@
 @echo off
 setlocal
-pushd "%~dp0"
+pushd "%~dp0..\.."
 where node >nul 2>nul
 if errorlevel 1 (
   echo Instala Node.js 24.17 o superior desde https://nodejs.org/
@@ -21,6 +21,6 @@ if errorlevel 1 (
   exit /b 1
 )
 echo.
-echo Listo. Abri 2-CONFIGURAR.cmd y segui LEEME.md.
+echo Listo. Abri 2-CONFIGURAR.cmd y segui docs\instalacion.md.
 popd
 pause

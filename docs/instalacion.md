@@ -1,12 +1,16 @@
-# WO Guardian — empezá por acá
+# Instalación y puesta en marcha
 
-**Para este equipo, abrí Agente-Canino.exe y seguí [ALOJAMIENTO-AUTOMATICO.md](ALOJAMIENTO-AUTOMATICO.md).** Solo se vincula cada PC una vez con el código de un administrador. Después, basta con abrir el exe: si otra PC está activa, espera y toma el relevo automáticamente. No hay que pasar archivos ni copiar el token. Los pasos de relevo manual que aparecen abajo solo corresponden a instalaciones independientes, sin la comunidad compartida.
+## Equipo de WO Definitive Edition
 
-**En Windows podés usar Agente-Canino.exe:** extraé todos los archivos y abrilo dentro de la carpeta del bot. Se encarga de preparar los componentes y tiene botones para iniciar, detener, pasar o recibir un relevo. No necesitás abrir los CMD. Si ya tenés los datos del bot, intenta iniciarlo al abrir la app; después podés cerrar la ventana y el bot sigue funcionando. Podés crear un acceso directo en el escritorio. Para continuar el bot de tus amigos, elegí **Recibir y comenzar** con el último archivo `.wohost` y su contraseña.
+**Para este equipo, descargá `WO-Guardian-Windows.zip` desde la [última versión publicada](https://github.com/federicoviceconte5-jpg/bot-discord/releases/latest), extraelo entero, abrí Agente-Canino.exe y seguí [alojamiento-automatico.md](alojamiento-automatico.md).** Solo se vincula cada PC una vez con el código de un administrador. Después, basta con abrir el exe: si otra PC está activa, espera y toma el relevo automáticamente. No hay que pasar archivos ni copiar el token.
 
-El bot está creado. **Si sos del equipo y querés alojar el bot existente de un amigo, seguí [RELEVO-ENTRE-AMIGOS.md](RELEVO-ENTRE-AMIGOS.md). No crees otra aplicación ni vuelvas a instalar los canales.** GitHub no contiene el token ni la base de datos; el anfitrión actual prepara un relevo cifrado con el botón 7 y vos lo recibís con el 8.
+Agente-Canino.exe prepara los componentes y tiene botones para iniciar, detener, pasar o recibir un relevo. Tiene que quedar dentro de la carpeta del bot; para el escritorio, creá un acceso directo. Si ya tenés los datos del bot, intenta iniciarlo al abrir la app; después podés cerrar la ventana y el bot sigue funcionando.
 
-Los siguientes pasos son para crear un bot nuevo en otro servidor:
+Para instalaciones independientes, sin la comunidad compartida, el relevo manual está en [relevo-manual.md](relevo-manual.md). GitHub no contiene el token ni la base de datos.
+
+## Crear un bot nuevo en otro servidor
+
+Los scripts `.cmd` están en `scripts/windows/`.
 
 1. Instalá **Node.js 24.17 o superior**, si no lo tenés: [nodejs.org](https://nodejs.org/).
 2. Abrí **1-INSTALAR.cmd** con doble clic.
@@ -22,14 +26,16 @@ Los siguientes pasos son para crear un bot nuevo en otro servidor:
 12. Ejecutá `/instalar`. El bot crea sus canales, categorías, roles de idioma y paneles. Cada idioma tiene su propia bienvenida, central, soporte, ideas, novedades, chat y voz. Podés repetir este comando sin duplicar los recursos que haya registrado.
 13. Asignale el rol **WO · Soporte** (o el que elegiste) a tu equipo. Ejecutá `/diagnostico`.
 
+En macOS o Linux se usan los mismos pasos con `npm ci`, `npm run invite`, `npm run register` y `npm start` en lugar de los `.cmd`.
+
 Para elegir el rol de ingreso después: `/configurar rol_nuevos:@TuRol`. Debe ser un rol de miembro, sin permisos elevados, debajo del bot. El cambio se aplica a los próximos ingresos; no modifica masivamente miembros existentes.
 
 Probalo con otra cuenta que no sea administradora: entrá al servidor, elegí idioma y abrí un ticket. Las cuentas con Administrador ven todos los canales por diseño de Discord, aunque sean privados.
 
 La pregunta de ingreso es breve. La tarjeta y el mensaje de bienvenida aparecen después de elegir idioma, en la sección correspondiente. Al cambiar de idioma con `/idioma`, se actualizan los accesos sin repetir el saludo público. Los botones de confirmación llevan directo a tu central y al chat.
 
-El asistente de IA y la reproducción de voz fueron retirados. OpenAI está desactivado. Para novedades automáticas, escribí el texto y adjuntá imágenes o videos en 📝・publicar-novedades; el bot publica en los cinco idiomas y muestra el resultado en 📋・estado-de-envíos. La traducción usa MyMemory gratuito con cupo diario.
+Para novedades automáticas, escribí el texto y adjuntá imágenes o videos en 📝・publicar-novedades; el bot publica en los cinco idiomas y muestra el resultado en 📋・estado-de-envíos. La traducción usa MyMemory gratuito con cupo diario.
 
 La PC debe quedar encendida para que el bot responda. Al volver a encender Windows, abrí **5-INICIAR.cmd**: abrir Discord no inicia el bot. Para errores de arranque usá **9-DIAGNOSTICO.cmd**. También se incluye una configuración de Docker para alojarlo en un servidor.
 
-Más funciones, solución de problemas y detalles: [README.md](README.md).
+Más detalles técnicos: [arquitectura.md](arquitectura.md).
