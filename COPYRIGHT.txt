@@ -6,11 +6,29 @@ Bot de comunidad desarrollado para WO Definitive Edition.
 Titular de los derechos de autor del proyecto: el equipo de WO Definitive Edition,
 representado en este repositorio por Federico Viceconte y Rodriigo24.
 
+Este repositorio es público para que el proyecto pueda verse como parte del
+portfolio de sus autores. Que el código sea visible no concede ninguna
+licencia sobre él.
+
+Se permite:
+
+- Ver el código y la documentación en GitHub y hacer un fork dentro de GitHub,
+  según los Términos de Servicio de GitHub para repositorios públicos.
+
+No se permite, sin autorización previa y por escrito del equipo de
+WO Definitive Edition:
+
+- Copiar, reproducir, modificar, adaptar o traducir el código, el diseño, las
+  traducciones o la documentación, en todo o en parte.
+- Redistribuir, publicar, vender, alquilar o sublicenciar el proyecto o partes
+  de él, incluidas versiones modificadas.
+- Usarlo en otros proyectos, productos o trabajos académicos, o presentarlo como
+  propio.
+
 Este aviso se aplica al código, la documentación y los recursos originales del
 proyecto en la medida en que sean susceptibles de protección por derechos de
 autor. Las bibliotecas, herramientas y servicios de terceros conservan sus
 licencias y condiciones. Consultar LICENCIAS.txt.
 
-No se concede una licencia general para redistribuir, vender o modificar el
-proyecto. Cualquier autorización adicional debe solicitarse al equipo de
-WO Definitive Edition.
+Para pedir una autorización, contactar al equipo de WO Definitive Edition o
+abrir un issue en el repositorio.
